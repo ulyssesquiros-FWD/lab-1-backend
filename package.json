@@ -1,0 +1,25 @@
+{
+  "name": "practica-backend-apis",
+  "version": "1.0.0",
+  "description": "Práctica 1 de Desarrollo Back End: Postman, Colecciones y Consumo de APIs REST",
+  "main": "db.json",
+  "scripts": {
+    "api": "json-server --watch db.json --port 3000",
+    "reset-db": "node scripts/reset-db.js",
+    "test:collection": "newman run \"postman/Practica Backend - APIs.postman_collection.json\""
+  },
+  "keywords": [
+    "json-server",
+    "postman",
+    "rest-api",
+    "backend"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-server": "^0.17.4"
+  },
+  "devDependencies": {
+    "newman": "^6.2.1"
+  }
+}

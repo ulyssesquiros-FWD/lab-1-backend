@@ -1,0 +1,480 @@
+{
+	"info": {
+		"_postman_id": "c7a8b412-32a1-4034-9d5f-e58f0cb18a42",
+		"name": "Practica Backend - APIs",
+		"description": "Colección de pruebas para la Práctica 1 de Desarrollo Back End: Postman, Colecciones y Consumo de APIs REST (API Local y API Pública).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "API Local (db.json)",
+			"description": "Peticiones CRUD y de consulta ordenadas hacia el servidor local json-server (puerto 3000).",
+			"item": [
+				{
+					"name": "GET - Listar todos los productos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET productos devuelve HTTP 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"La respuesta es un arreglo en formato JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Los productos contienen los campos requeridos y tipos validos\", function () {",
+									"    const productos = pm.response.json();",
+									"    pm.expect(productos.length).to.be.above(0);",
+									"    productos.forEach(function (producto) {",
+									"        pm.expect(producto).to.have.property(\"id\");",
+									"        pm.expect(producto.id).to.be.a(\"number\");",
+									"        pm.expect(producto).to.have.property(\"nombre\");",
+									"        pm.expect(producto.nombre).to.be.a(\"string\");",
+									"        pm.expect(producto).to.have.property(\"precio\");",
+									"        pm.expect(producto.precio).to.be.a(\"number\");",
+									"        pm.expect(producto).to.have.property(\"stock\");",
+									"        pm.expect(producto.stock).to.be.a(\"number\");",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/productos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"productos"
+							]
+						},
+						"description": "Obtiene la lista completa de productos registrados en la base de datos local db.json."
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Consultar producto por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET producto por ID devuelve HTTP 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"La respuesta es un objeto JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.expect(pm.response.json()).to.be.an(\"object\");",
+									"});",
+									"",
+									"pm.test(\"El producto obtenido tiene ID 2 y corresponde a Mouse inalámbrico\", function () {",
+									"    const producto = pm.response.json();",
+									"    pm.expect(producto.id).to.eql(2);",
+									"    pm.expect(producto.nombre).to.eql(\"Mouse inalámbrico\");",
+									"    pm.expect(producto.precio).to.eql(14000);",
+									"    pm.expect(producto.stock).to.eql(30);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/productos/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"productos",
+								"2"
+							]
+						},
+						"description": "Consulta un producto específico por su identificador (ID 2)."
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Crear producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"POST crea un producto con HTTP 201\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"",
+									"pm.test(\"La respuesta es un objeto JSON con ID asignado\", function () {",
+									"    pm.response.to.be.json;",
+									"    const data = pm.response.json();",
+									"    pm.expect(data).to.have.property(\"id\");",
+									"});",
+									"",
+									"pm.test(\"POST crea un producto con los datos esperados\", function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.nombre).to.eql(\"Auriculares\");",
+									"    pm.expect(data.precio).to.eql(32000);",
+									"    pm.expect(data.stock).to.eql(20);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Auriculares\",\n  \"precio\": 32000,\n  \"stock\": 20\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/productos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"productos"
+							]
+						},
+						"description": "Crea un nuevo producto en la colección local."
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Actualizar producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"PUT actualiza producto y devuelve HTTP 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"PUT actualiza correctamente el producto\", function () {",
+									"    const data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(1);",
+									"    pm.expect(data.nombre).to.eql(\"Teclado mecánico actualizado\");",
+									"    pm.expect(data.precio).to.eql(27000);",
+									"    pm.expect(data.stock).to.eql(10);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"nombre\": \"Teclado mecánico actualizado\",\n  \"precio\": 27000,\n  \"stock\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/productos/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"productos",
+								"1"
+							]
+						},
+						"description": "Reemplaza por completo los datos del producto con ID 1."
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Eliminar producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"DELETE elimina el producto solicitado con HTTP 200 o 204\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+									"});",
+									"",
+									"pm.test(\"Comprobacion posterior: el producto con ID 3 ya no existe\", function () {",
+									"    pm.sendRequest(\"http://localhost:3000/productos/3\", function (err, res) {",
+									"        pm.expect(res.code).to.eql(404);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/productos/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"productos",
+								"3"
+							]
+						},
+						"description": "Elimina el producto con ID 3 del servidor local y valida con comprobación posterior que retorne 404."
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Ordenar productos por precio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET ordenamiento devuelve HTTP 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"La respuesta es un arreglo de productos\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Los productos están ordenados por precio ascendente\", function () {",
+									"    const productos = pm.response.json();",
+									"    pm.expect(productos.length).to.be.above(1);",
+									"    for (let i = 0; i < productos.length - 1; i++) {",
+									"        pm.expect(productos[i].precio).to.be.at.most(productos[i + 1].precio);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/productos?_sort=precio",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"productos"
+							],
+							"query": [
+								{
+									"key": "_sort",
+									"value": "precio",
+									"description": "Ordena los productos ascendentemente por el campo numérico precio"
+								}
+							]
+						},
+						"description": "Obtiene la lista de productos ordenados numéricamente de menor a mayor precio."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API Publica",
+			"description": "Peticiones GET de solo lectura hacia la API pública JSONPlaceholder (https://jsonplaceholder.typicode.com).",
+			"item": [
+				{
+					"name": "GET - Listar publicaciones públicas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET publicaciones devuelve HTTP 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"La respuesta es un arreglo en formato JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+									"});",
+									"",
+									"pm.test(\"Cada publicacion tiene estructura userId, id, title y body\", function () {",
+									"    const posts = pm.response.json();",
+									"    pm.expect(posts.length).to.be.above(0);",
+									"    const muestra = posts[0];",
+									"    pm.expect(muestra).to.have.property(\"userId\");",
+									"    pm.expect(muestra.userId).to.be.a(\"number\");",
+									"    pm.expect(muestra).to.have.property(\"id\");",
+									"    pm.expect(muestra.id).to.be.a(\"number\");",
+									"    pm.expect(muestra).to.have.property(\"title\");",
+									"    pm.expect(muestra.title).to.be.a(\"string\");",
+									"    pm.expect(muestra).to.have.property(\"body\");",
+									"    pm.expect(muestra.body).to.be.a(\"string\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/posts",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"posts"
+							]
+						},
+						"description": "Recupera todas las publicaciones del recurso público posts."
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Consultar publicación por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET publicacion por ID devuelve HTTP 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"La respuesta es un objeto JSON correspondiente al ID 1\", function () {",
+									"    pm.response.to.be.json;",
+									"    const post = pm.response.json();",
+									"    pm.expect(post).to.be.an(\"object\");",
+									"    pm.expect(post.id).to.eql(1);",
+									"    pm.expect(post.userId).to.be.a(\"number\");",
+									"    pm.expect(post.title).to.be.a(\"string\");",
+									"    pm.expect(post.body).to.be.a(\"string\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/posts/1",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"posts",
+								"1"
+							]
+						},
+						"description": "Recupera la publicación específica con ID 1."
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Filtrar publicaciones por usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET filtro por usuario devuelve HTTP 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"La consulta pública devuelve publicaciones del usuario 1\", function () {",
+									"    pm.response.to.be.json;",
+									"    const posts = pm.response.json();",
+									"    pm.expect(posts).to.be.an(\"array\");",
+									"    pm.expect(posts.length).to.be.above(0);",
+									"    posts.forEach(function (post) {",
+									"        pm.expect(post.userId).to.eql(1);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jsonplaceholder.typicode.com/posts?userId=1",
+							"protocol": "https",
+							"host": [
+								"jsonplaceholder",
+								"typicode",
+								"com"
+							],
+							"path": [
+								"posts"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "Filtro de publicaciones para el usuario con identificador 1"
+								}
+							]
+						},
+						"description": "Filtra las publicaciones públicas para recuperar únicamente las pertenecientes al userId 1."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
